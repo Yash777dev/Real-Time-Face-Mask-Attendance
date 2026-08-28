@@ -1,0 +1,129 @@
+/* camera.css — Minimalist Black & White Camera UI */
+
+.camera-section {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+}
+
+.camera-feed {
+    background: var(--color-glass-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.camera-feed video,
+.camera-feed canvas {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    background: #000000;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.camera-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.phase-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding: 16px 24px;
+    background: var(--color-glass-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+}
+
+.phase-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.4;
+    transition: opacity var(--transition-fast);
+}
+
+.phase-step.active {
+    opacity: 1;
+}
+
+.phase-num {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(24, 24, 27, 0.8);
+    border: 1px solid var(--border-color);
+    color: var(--color-zinc-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8125rem;
+}
+
+.phase-step.active .phase-num {
+    background: var(--color-white);
+    color: var(--color-black);
+    border-color: var(--color-white);
+    box-shadow: 0 0 14px rgba(255, 255, 255, 0.3);
+}
+
+.camera-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-white);
+    border: 1px solid var(--border-hover);
+}
+
+.camera-status .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-white);
+    box-shadow: 0 0 8px var(--color-white);
+    animation: pulseGlow 2s infinite;
+}
+
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.image-thumb {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    object-fit: cover;
+    border: 2px solid var(--color-white);
+}
+
+.image-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radius-sm);
+    background: rgba(24, 24, 27, 0.5);
+    border: 1px dashed var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-zinc-500);
+    font-size: 0.875rem;
+}

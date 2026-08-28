@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+
+{% block title %}SmartAttend — Automated Face Recognition Attendance System{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Top Navigation Bar -->
+<header class="landing-header">
+    <nav class="landing-nav">
+        <a href="/" class="brand-logo">
+            <div class="brand-logo-icon">
+                <i class="fa-solid fa-expand"></i>
+            </div>
+            <span>SmartAttend</span>
+        </a>
+
+        <ul class="nav-links">
+            <li><a href="#hero" class="active">Dashboard</a></li>
+            <li><a href="{{ url_for('attendance_routes.camera') }}">Attendance</a></li>
+            <li><a href="{{ url_for('admin_routes.students') }}">Students</a></li>
+            <li><a href="{{ url_for('admin_routes.reports') }}">Reports</a></li>
+        </ul>
+
+        <div class="nav-right">
+            <button class="icon-btn" title="Notifications">
+                <i class="fa-solid fa-bell"></i>
+            </button>
+            <a href="{{ url_for('auth_routes.login') }}" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-right-to-bracket"></i> Login
+            </a>
+        </div>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero-section" id="hero">
+    <div class="hero-left">
+        <div class="trust-badge">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>AI-Powered &bull; Real-Time &bull; Secure</span>
+        </div>
+
+        <h1 class="hero-title">
+            Attendance, Automated by Face Recognition
+        </h1>
+
+        <p class="hero-subtitle">
+            Smart, secure and effortless attendance tracking for students and educational institutions.
+        </p>
+
+        <div class="hero-actions">
+            <a href="{{ url_for('attendance_routes.camera') }}" class="btn btn-primary btn-lg">
+                <i class="fa-solid fa-camera"></i> Mark Attendance
+            </a>
+            <a href="{{ url_for('auth_routes.login') }}" class="btn btn-outline btn-lg">
+                <i class="fa-solid fa-chart-pie"></i> View Attendance
+            </a>
+        </div>
+    </div>
+
+    <!-- Student Profile Visual Card with Percentage -->
+    <div class="hero-right">
+        <div class="student-profile-hero-card">
+            <!-- Header Section -->
+            <div class="profile-hero-header">
+                <div class="profile-status-tag">
+                    <span class="status-pulse-dot"></span>
+                    <span>STUDENT PROFILE</span>
+                </div>
+                <span class="badge badge-green"><i class="fa-solid fa-shield-check me-1"></i> VERIFIED</span>
+            </div>
+
+            <!-- Card Core Content -->
+            <div class="profile-hero-content">
+                <!-- Avatar & Identity -->
+                <div class="profile-hero-user">
+                    <div class="profile-hero-avatar">
+                        <span>JD</span>
+                        <div class="avatar-status-badge">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                    </div>
+                    <div class="profile-hero-details">
+                        <h3 class="profile-hero-name">John Doe</h3>
+                        <p class="profile-hero-sub">CSE2021001 &bull; Computer Science &amp; Eng.</p>
+                        <span class="badge-outline-sm"><i class="fa-solid fa-id-card me-1"></i> Active Student</span>
+                    </div>
+                </div>
+
+                <!-- Attendance Percentage Display Box -->
+                <div class="profile-percentage-card">
+                    <div class="percentage-ring-container">
+                        <svg class="progress-ring" width="110" height="110" viewBox="0 0 110 110">
+                            <circle class="progress-ring-bg" cx="55" cy="55" r="46"></circle>
+                            <circle class="progress-ring-fill" cx="55" cy="55" r="46" style="stroke-dasharray: 289; stroke-dashoffset: 35;"></circle>
+                        </svg>
+                        <div class="percentage-inner-text">
+                            <span class="percentage-number">98.7%</span>
+                            <span class="percentage-label">ATTENDANCE</span>
+                        </div>
+                    </div>
+
+                    <div class="percentage-stats-list">
+                        <div class="stat-mini-item">
+                            <span class="stat-mini-label">Total Days</span>
+                            <span class="stat-mini-val">45 Days</span>
+                        </div>
+                        <div class="stat-mini-item">
+                            <span class="stat-mini-label">Attended</span>
+                            <span class="stat-mini-val text-green">42 Days</span>
+                        </div>
+                        <div class="stat-mini-item">
+                            <span class="stat-mini-label">AI Match Score</span>
+                            <span class="stat-mini-val">98.7% Match</span>
+                        </div>
+                        <div class="stat-mini-item">
+                            <span class="stat-mini-label">Today's Status</span>
+                            <span class="badge badge-green"><i class="fa-solid fa-check-double me-1"></i> Present</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Footer Bar -->
+                <div class="profile-hero-footer">
+                    <div class="footer-info-item text-green">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Face Recognition Verified</span>
+                    </div>
+                    <div class="footer-info-item">
+                        <i class="fa-solid fa-clock"></i>
+                        <span>Last Marked Today, 09:15 AM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dashboard Preview Section -->
+<section class="preview-section">
+    <div class="section-header">
+        <h2>Today's Attendance Overview</h2>
+        <p>Real-time analytics and attendance verification for active classes.</p>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="preview-grid">
+        <div class="preview-stat-card">
+            <div class="stat-icon-wrapper">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div>
+                <div class="preview-stat-value">{{ stats.today_present if stats else 42 }}</div>
+                <div class="preview-stat-label">Present Today</div>
+            </div>
+        </div>
+
+        <div class="preview-stat-card">
+            <div class="stat-icon-wrapper">
+                <i class="fa-solid fa-user-xmark"></i>
+            </div>
+            <div>
+                <div class="preview-stat-value">{{ stats.today_absent if stats else 6 }}</div>
+                <div class="preview-stat-label">Absent Today</div>
+            </div>
+        </div>
+
+        <div class="preview-stat-card">
+            <div class="stat-icon-wrapper">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+            <div>
+                <div class="preview-stat-value">{{ stats.attendance_rate if stats else 87.5 }}%</div>
+                <div class="preview-stat-label">Attendance Rate</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Panel Preview -->
+    <div class="dashboard-preview-panel">
+        <div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--color-anti-flash-white);">
+                    Weekly Attendance Trend
+                </h3>
+                <span class="badge badge-mint">Last 7 Days</span>
+            </div>
+            <div style="height: 240px;">
+                <canvas id="landingWeeklyChart"></canvas>
+            </div>
+        </div>
+
+        <div>
+            <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--color-anti-flash-white); margin-bottom: 16px;">
+                Recent Verification Timeline
+            </h3>
+            <div class="timeline-item">
+                <div class="rec-avatar" style="width:34px;height:34px;font-size:0.75rem;">AS</div>
+                <div style="flex:1;">
+                    <div style="font-size:0.8125rem;font-weight:600;">Alex Smith</div>
+                    <div style="font-size:0.75rem;color:var(--color-stone);">09:15 AM &bull; Verified</div>
+                </div>
+                <span class="badge badge-green" style="font-size:0.6875rem;">Recorded</span>
+            </div>
+
+            <div class="timeline-item">
+                <div class="rec-avatar" style="width:34px;height:34px;font-size:0.75rem;">EM</div>
+                <div style="flex:1;">
+                    <div style="font-size:0.8125rem;font-weight:600;">Emma Miller</div>
+                    <div style="font-size:0.75rem;color:var(--color-stone);">09:12 AM &bull; Verified</div>
+                </div>
+                <span class="badge badge-green" style="font-size:0.6875rem;">Recorded</span>
+            </div>
+
+            <div class="timeline-item">
+                <div class="rec-avatar" style="width:34px;height:34px;font-size:0.75rem;">DW</div>
+                <div style="flex:1;">
+                    <div style="font-size:0.8125rem;font-weight:600;">David Wilson</div>
+                    <div style="font-size:0.75rem;color:var(--color-stone);">09:08 AM &bull; Verified</div>
+                </div>
+                <span class="badge badge-green" style="font-size:0.6875rem;">Recorded</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="section-header">
+        <h2>Built for Educational Excellence</h2>
+        <p>Enterprise-grade face recognition technology designed for campus automation.</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fa-solid fa-face-viewfinder"></i>
+            </div>
+            <h3>Face Recognition</h3>
+            <p>Automatically identify registered students using ArcFace deep neural networks and facial feature vectors.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+            </div>
+            <h3>Real-Time Attendance</h3>
+            <p>Attendance is processed and recorded instantly upon face verification without manual proxy vulnerability.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3>Secure & Reliable</h3>
+            <p>Designed with encrypted vector storage in PostgreSQL, session protection, and multi-role access control.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fa-solid fa-chart-column"></i>
+            </div>
+            <h3>Attendance Analytics</h3>
+            <p>Monitor daily attendance rates, department statistics, student histories, and export detailed CSV reports.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="landing-footer">
+    <div class="max-width: 1240px; margin: 0 auto; padding: 0 24px;">
+        <p>&copy; 2026 SmartAttend. All rights reserved. Built for Colleges & Institutions.</p>
+    </div>
+</footer>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const dummyWeekly = [
+            { date: 'Mon', count: 38 },
+            { date: 'Tue', count: 42 },
+            { date: 'Wed', count: 40 },
+            { date: 'Thu', count: 45 },
+            { date: 'Fri', count: 42 },
+            { date: 'Sat', count: 35 },
+            { date: 'Sun', count: 42 }
+        ];
+        initWeeklyChart('landingWeeklyChart', dummyWeekly);
+    });
+</script>
+{% endblock %}

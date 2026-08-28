@@ -1,0 +1,117 @@
+<!-- frontend/templates/admin/attendance.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Attendance Records — SmartAttend{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fa-solid fa-expand"></i></span>
+            <h5>SmartAttend</h5>
+            <p>Admin Portal</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('admin_routes.dashboard') }}"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+            <li><a href="{{ url_for('admin_routes.students') }}"><i class="fa-solid fa-users"></i><span>Students</span></a></li>
+            <li><a href="{{ url_for('admin_routes.add_student') }}"><i class="fa-solid fa-user-plus"></i><span>Add Student</span></a></li>
+            <li><a href="{{ url_for('attendance_routes.camera') }}"><i class="fa-solid fa-camera"></i><span>Live Camera</span></a></li>
+            <li><a href="{{ url_for('admin_routes.attendance') }}" class="active"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+            <li><a href="{{ url_for('admin_routes.reports') }}"><i class="fa-solid fa-file-export"></i><span>Reports</span></a></li>
+            <li class="sidebar-divider"></li>
+            <li><a href="{{ url_for('auth_routes.logout') }}"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title"><i class="fa-solid fa-calendar-check me-2 text-primary"></i>Attendance Records</span>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <form method="GET" style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; align-items:flex-end;">
+                <div>
+                    <label class="form-label" style="font-size:0.75rem;">Start Date</label>
+                    <input type="date" class="form-control" name="start_date" value="{{ start_date }}" style="width:160px;">
+                </div>
+
+                <div>
+                    <label class="form-label" style="font-size:0.75rem;">End Date</label>
+                    <input type="date" class="form-control" name="end_date" value="{{ end_date }}" style="width:160px;">
+                </div>
+
+                <div>
+                    <label class="form-label" style="font-size:0.75rem;">Department</label>
+                    <select name="department" class="form-select" style="width:180px;">
+                        <option value="">All Departments</option>
+                        {% for dept in departments %}
+                        <option value="{{ dept }}" {{ 'selected' if department == dept }}>{{ dept }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-sm"><i class="fa-solid fa-filter"></i> Filter</button>
+            </form>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Attendance Logs</span>
+                    <span class="badge badge-green">{{ records|length }} Records</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Register No.</th>
+                                    <th>Student Name</th>
+                                    <th>Department</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Mask Status</th>
+                                    <th>Match Confidence</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for att, student in records %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td><strong>{{ student.register_number }}</strong></td>
+                                    <td>{{ student.name }}</td>
+                                    <td><span class="badge badge-green">{{ student.department }}</span></td>
+                                    <td>{{ att.attendance_date.strftime('%d %b %Y') }}</td>
+                                    <td>{{ att.attendance_time.strftime('%I:%M %p') }}</td>
+                                    <td>
+                                        {% if att.mask_detected %}
+                                        <span class="badge badge-mint"><i class="fa-solid fa-mask"></i> Mask</span>
+                                        {% else %}
+                                        <span class="badge badge-muted"><i class="fa-solid fa-user"></i> No Mask</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><small>{{ "%.0f"|format(att.recognition_confidence * 100) }}%</small></td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" style="text-align:center;padding:40px;color:var(--color-stone);">
+                                        <i class="fa-solid fa-calendar-xmark" style="font-size:2rem;margin-bottom:8px;"></i>
+                                        <div>No attendance records found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

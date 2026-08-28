@@ -1,0 +1,138 @@
+<!-- frontend/templates/admin/register_face.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Register Face — {{ student.name }}{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/camera.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fa-solid fa-expand"></i></span>
+            <h5>SmartAttend</h5>
+            <p>Admin Portal</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('admin_routes.dashboard') }}"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+            <li><a href="{{ url_for('admin_routes.students') }}" class="active"><i class="fa-solid fa-users"></i><span>Students</span></a></li>
+            <li><a href="{{ url_for('admin_routes.add_student') }}"><i class="fa-solid fa-user-plus"></i><span>Add Student</span></a></li>
+            <li><a href="{{ url_for('attendance_routes.camera') }}"><i class="fa-solid fa-camera"></i><span>Live Camera</span></a></li>
+            <li><a href="{{ url_for('admin_routes.attendance') }}"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+            <li><a href="{{ url_for('admin_routes.reports') }}"><i class="fa-solid fa-file-export"></i><span>Reports</span></a></li>
+            <li class="sidebar-divider"></li>
+            <li><a href="{{ url_for('auth_routes.logout') }}"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title"><i class="fa-solid fa-camera me-2 text-primary"></i>Register Face — {{ student.name }}</span>
+            </div>
+            <div class="topbar-right">
+                <a href="{{ url_for('admin_routes.students') }}" class="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="card mb-4">
+                <div class="card-body" style="padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+                    <div>
+                        <strong style="font-size: 1.125rem;">{{ student.name }}</strong>
+                        <span style="color:var(--color-stone); margin-left: 8px;">{{ student.register_number }}</span>
+                        <span class="badge badge-green ms-2">{{ student.department }}</span>
+                    </div>
+                    <div style="display:flex; gap: 20px; color:var(--color-pistachio); font-size: 0.875rem;">
+                        <span>Normal Photos: <strong id="normalCount" style="color:var(--color-caribbean-green);">{{ normal_count }}</strong>/{{ max_captures }}</span>
+                        <span>Masked Photos: <strong id="maskedCount" style="color:var(--color-caribbean-green);">{{ masked_count }}</strong>/{{ max_captures }}</span>
+                        <span>Embeddings: <strong id="embeddingCount" style="color:var(--color-caribbean-green);">{{ embedding_count }}</strong></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="phase-indicator">
+                <div class="phase-step active" id="phase1">
+                    <div class="phase-num">1</div>
+                    <span style="font-size: 0.8125rem; font-weight: 600; display: block;">Normal Photos</span>
+                    <span style="font-size: 0.75rem; color: var(--color-stone);">Without mask</span>
+                </div>
+                <div class="phase-step" id="phase2">
+                    <div class="phase-num">2</div>
+                    <span style="font-size: 0.8125rem; font-weight: 600; display: block;">Masked Photos</span>
+                    <span style="font-size: 0.75rem; color: var(--color-stone);">With face mask</span>
+                </div>
+                <div class="phase-step" id="phase3">
+                    <div class="phase-num">3</div>
+                    <span style="font-size: 0.8125rem; font-weight: 600; display: block;">Generate Embeddings</span>
+                    <span style="font-size: 0.75rem; color: var(--color-stone);">ArcFace AI Processing</span>
+                </div>
+            </div>
+
+            <div class="camera-section">
+                <div>
+                    <div class="camera-feed">
+                        <video id="webcam" autoplay playsinline muted style="width:100%; aspect-ratio:4/3; object-fit:cover; transform:scaleX(-1);"></video>
+                        <canvas id="captureCanvas"></canvas>
+                        <div class="camera-controls" style="flex-direction:column; gap:12px;">
+                            <div style="display:flex; gap:12px;">
+                                <button id="captureBtn" class="btn btn-primary">
+                                    <i class="fa-solid fa-camera"></i> Capture Normal Image
+                                </button>
+                                <button id="switchPhaseBtn" class="btn btn-outline btn-sm">
+                                    <i class="fa-solid fa-rotate"></i> Switch Phase
+                                </button>
+                            </div>
+
+                            <button id="generateBtn" class="btn btn-primary btn-block" style="{{ 'display:none' if normal_count == 0 and masked_count == 0 }}">
+                                <i class="fa-solid fa-brain"></i> Generate Embeddings
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <span><i class="fa-solid fa-image me-2"></i>Normal Photos</span>
+                            <span class="badge badge-green" id="normalBadge">{{ normal_count }}/{{ max_captures }}</span>
+                        </div>
+                        <div class="image-grid" id="normalGrid">
+                            {% for i in range(max_captures) %}
+                                <div class="image-placeholder"><i class="fa-solid fa-user"></i></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span><i class="fa-solid fa-mask me-2"></i>Masked Photos</span>
+                            <span class="badge badge-mint" id="maskedBadge">{{ masked_count }}/{{ max_captures }}</span>
+                        </div>
+                        <div class="image-grid" id="maskedGrid">
+                            {% for i in range(max_captures) %}
+                                <div class="image-placeholder"><i class="fa-solid fa-mask"></i></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/camera.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        new FaceRegistration({{ student.id }}, {{ max_captures }});
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Login — SmartAttend{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-bg"></div>
+
+    <div class="login-card">
+        <div class="login-brand">
+            <div class="brand-icon"><i class="fa-solid fa-expand"></i></div>
+            <h2>SmartAttend</h2>
+            <p>Real-Time Face Recognition Attendance System</p>
+        </div>
+
+        <!-- Role Selector -->
+        <div class="role-selector">
+            <button type="button" class="role-btn active" data-role="admin" onclick="switchRole('admin')">
+                <i class="fa-solid fa-user-shield"></i> Admin
+            </button>
+            <button type="button" class="role-btn" data-role="student" onclick="switchRole('student')">
+                <i class="fa-solid fa-user-graduate"></i> Student
+            </button>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth_routes.login') }}" id="loginForm">
+            <input type="hidden" name="role" id="roleInput" value="admin">
+
+            <div class="form-group">
+                <label id="usernameLabel">Admin Username</label>
+                <div style="position:relative;">
+                    <input type="text" class="form-control" name="username" id="usernameInput"
+                           placeholder="Enter username" required autocomplete="username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <div style="position:relative;">
+                    <input type="password" class="form-control" name="password"
+                           placeholder="Enter password" required autocomplete="current-password">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 24px;">
+                <i class="fa-solid fa-right-to-bracket"></i> Sign In
+            </button>
+        </form>
+
+        <div style="text-align:center;margin-top:24px;color:var(--color-stone);font-size:0.8125rem;">
+            <i class="fa-solid fa-shield-halved"></i> Secured by ArcFace Recognition
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script>
+    function switchRole(role) {
+        document.getElementById('roleInput').value = role;
+
+        document.querySelectorAll('.role-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.role === role);
+        });
+
+        const label = document.getElementById('usernameLabel');
+        const input = document.getElementById('usernameInput');
+
+        if (role === 'student') {
+            label.textContent = 'Register Number';
+            input.placeholder = 'Enter register number';
+        } else {
+            label.textContent = 'Admin Username';
+            input.placeholder = 'Enter username';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,126 @@
+<!-- frontend/templates/admin/students.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Students — SmartAttend{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fa-solid fa-expand"></i></span>
+            <h5>SmartAttend</h5>
+            <p>Admin Portal</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('admin_routes.dashboard') }}"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+            <li><a href="{{ url_for('admin_routes.students') }}" class="active"><i class="fa-solid fa-users"></i><span>Students</span></a></li>
+            <li><a href="{{ url_for('admin_routes.add_student') }}"><i class="fa-solid fa-user-plus"></i><span>Add Student</span></a></li>
+            <li><a href="{{ url_for('attendance_routes.camera') }}"><i class="fa-solid fa-camera"></i><span>Live Camera</span></a></li>
+            <li><a href="{{ url_for('admin_routes.attendance') }}"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+            <li><a href="{{ url_for('admin_routes.reports') }}"><i class="fa-solid fa-file-export"></i><span>Reports</span></a></li>
+            <li class="sidebar-divider"></li>
+            <li><a href="{{ url_for('auth_routes.logout') }}"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title"><i class="fa-solid fa-users me-2 text-primary"></i>Students Directory</span>
+            </div>
+            <div class="topbar-right">
+                <a href="{{ url_for('admin_routes.add_student') }}" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-plus"></i> Add Student
+                </a>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <form method="GET" style="display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap;">
+                <input type="text" class="form-control" name="search" value="{{ search }}" placeholder="Search students..." style="max-width:260px;">
+                <select name="department" class="form-select" onchange="this.form.submit()" style="max-width:220px;">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                    <option value="{{ dept }}" {{ 'selected' if department == dept }}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-outline btn-sm"><i class="fa-solid fa-filter"></i> Filter</button>
+            </form>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Registered Students</span>
+                    <span class="badge badge-green">{{ students.total }} Total</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Register No.</th>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Year</th>
+                                    <th>Email</th>
+                                    <th>Face Data</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for student in students.items %}
+                                <tr>
+                                    <td>{{ loop.index + (students.page - 1) * students.per_page }}</td>
+                                    <td><strong>{{ student.register_number }}</strong></td>
+                                    <td>{{ student.name }}</td>
+                                    <td><span class="badge badge-green">{{ student.department }}</span></td>
+                                    <td>{{ student.year }}</td>
+                                    <td style="color:var(--color-stone);">{{ student.email }}</td>
+                                    <td>
+                                        {% set emb_count = embedding_counts.get(student.id, 0) %}
+                                        {% if emb_count > 0 %}
+                                        <span class="badge badge-green"><i class="fa-solid fa-check"></i> {{ emb_count }} embeddings</span>
+                                        {% else %}
+                                        <span class="badge badge-muted"><i class="fa-solid fa-xmark"></i> Not registered</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <a href="{{ url_for('admin_routes.register_face', student_id=student.id) }}" class="action-btn" title="Register Face">
+                                                <i class="fa-solid fa-camera"></i>
+                                            </a>
+                                            <a href="{{ url_for('admin_routes.edit_student', student_id=student.id) }}" class="action-btn" title="Edit">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </a>
+                                            <button class="action-btn delete-student-btn" data-student-id="{{ student.id }}" data-student-name="{{ student.name }}" title="Delete">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="8" style="text-align:center;padding:40px;color:var(--color-stone);">
+                                        <i class="fa-solid fa-users" style="font-size:2rem;margin-bottom:8px;"></i>
+                                        <div>No students found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}
