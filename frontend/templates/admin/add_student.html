@@ -1,0 +1,142 @@
+<!-- frontend/templates/admin/add_student.html -->
+
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit' if edit_mode else 'Add' }} Student — SmartAttend{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fa-solid fa-expand"></i></span>
+            <h5>SmartAttend</h5>
+            <p>Admin Portal</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('admin_routes.dashboard') }}"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+            <li><a href="{{ url_for('admin_routes.students') }}"><i class="fa-solid fa-users"></i><span>Students</span></a></li>
+            <li><a href="{{ url_for('admin_routes.add_student') }}" class="{{ 'active' if not edit_mode }}"><i class="fa-solid fa-user-plus"></i><span>Add Student</span></a></li>
+            <li><a href="{{ url_for('attendance_routes.camera') }}"><i class="fa-solid fa-camera"></i><span>Live Camera</span></a></li>
+            <li><a href="{{ url_for('admin_routes.attendance') }}"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+            <li><a href="{{ url_for('admin_routes.reports') }}"><i class="fa-solid fa-file-export"></i><span>Reports</span></a></li>
+            <li class="sidebar-divider"></li>
+            <li><a href="{{ url_for('auth_routes.logout') }}"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title">
+                    <i class="fa-solid fa-user-plus me-2 text-primary"></i>
+                    {{ 'Edit Student' if edit_mode else 'Add New Student' }}
+                </span>
+            </div>
+            <div class="topbar-right">
+                <a href="{{ url_for('admin_routes.students') }}" class="btn btn-outline btn-sm">
+                    <i class="fa-solid fa-arrow-left"></i> Back
+                </a>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="card" style="max-width: 800px;">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-id-card me-2"></i>Student Profile Registration</span>
+                </div>
+                <div class="card-body">
+                    <form method="POST" id="studentForm"
+                          action="{{ url_for('admin_routes.edit_student', student_id=student.id) if edit_mode else url_for('admin_routes.add_student') }}">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Register Number *</label>
+                                <input type="text" class="form-control" name="register_number"
+                                       value="{{ form_data.get('register_number', '') }}"
+                                       placeholder="e.g., CSE2021001"
+                                       {{ 'readonly' if edit_mode }} required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" class="form-control" name="name"
+                                       value="{{ form_data.get('name', '') }}"
+                                       placeholder="Student full name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Email Address *</label>
+                                <input type="email" class="form-control" name="email"
+                                       value="{{ form_data.get('email', '') }}"
+                                       placeholder="student@college.edu" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Department *</label>
+                                <select name="department" class="form-select" required>
+                                    <option value="">Select Department</option>
+                                    {% for dept in departments %}
+                                    <option value="{{ dept }}" {{ 'selected' if form_data.get('department') == dept }}>{{ dept }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Academic Year *</label>
+                                <select name="year" class="form-select" required>
+                                    <option value="">Select Year</option>
+                                    {% for yr in years %}
+                                    <option value="{{ yr }}" {{ 'selected' if form_data.get('year') == yr }}>{{ yr }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Semester</label>
+                                <select name="semester" class="form-select">
+                                    <option value="">Select Semester</option>
+                                    {% for sem in semesters %}
+                                    <option value="{{ sem }}" {{ 'selected' if form_data.get('semester') == sem }}>{{ sem }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Section</label>
+                                <select name="section" class="form-select">
+                                    <option value="">Select Section</option>
+                                    {% for sec in sections %}
+                                    <option value="{{ sec }}" {{ 'selected' if form_data.get('section') == sec }}>{{ sec }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>{{ 'New Password (leave blank to keep current)' if edit_mode else 'Password *' }}</label>
+                                <input type="password" class="form-control" name="password"
+                                       placeholder="{{ '••••••' if edit_mode else 'Minimum 6 characters' }}"
+                                       {{ '' if edit_mode else 'required' }} minlength="6">
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 28px; display: flex; gap: 12px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-{{ 'floppy-disk' if edit_mode else 'plus' }}"></i>
+                                {{ 'Update Student' if edit_mode else 'Add Student' }}
+                            </button>
+                            <a href="{{ url_for('admin_routes.students') }}" class="btn btn-outline">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

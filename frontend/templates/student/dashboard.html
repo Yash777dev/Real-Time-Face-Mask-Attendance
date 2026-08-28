@@ -1,0 +1,154 @@
+<!-- frontend/templates/student/dashboard.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard — {{ student.name }}{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fa-solid fa-expand"></i></span>
+            <h5>SmartAttend</h5>
+            <p>Student Portal</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('student_routes.dashboard') }}" class="active"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
+            <li><a href="{{ url_for('student_routes.profile') }}"><i class="fa-solid fa-user"></i><span>My Profile</span></a></li>
+            <li><a href="{{ url_for('student_routes.attendance') }}"><i class="fa-solid fa-calendar-check"></i><span>My Attendance</span></a></li>
+            <li class="sidebar-divider"></li>
+            <li><a href="{{ url_for('auth_routes.logout') }}"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title"><i class="fa-solid fa-house me-2 text-primary"></i>Student Dashboard</span>
+            </div>
+            <div class="topbar-right">
+                <div class="topbar-user">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>{{ student.name }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="card mb-4">
+                <div class="card-body" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px;">
+                    <div>
+                        <h2 style="font-size:1.25rem; font-weight:700; margin-bottom:4px;">
+                            Welcome, {{ student.name }}
+                        </h2>
+                        <p style="color:var(--color-pistachio); margin:0;">{{ student.register_number }} &bull; {{ student.department }} &bull; {{ student.year }}</p>
+                    </div>
+                    <div>
+                        {% if today_present %}
+                        <span class="today-status present"><i class="fa-solid fa-circle-check"></i> Present Today</span>
+                        {% else %}
+                        <span class="today-status absent"><i class="fa-solid fa-circle-xmark"></i> Not Marked Today</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                        <div>
+                            <div class="stat-value">{{ total_attendance }}</div>
+                            <div class="stat-label">Days Present</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-percent"></i></div>
+                        <div>
+                            <div class="stat-value" id="attendancePercentage">—</div>
+                            <div class="stat-label">Attendance Rate</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-mask"></i></div>
+                        <div>
+                            <div class="stat-value">{{ mask_count }}</div>
+                            <div class="stat-label">With Mask</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-fingerprint"></i></div>
+                        <div>
+                            <div class="stat-value">{{ embedding_count }}</div>
+                            <div class="stat-label">Face Embeddings</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="fa-solid fa-clock me-2 text-primary"></i>Recent Attendance</span>
+                    <a href="{{ url_for('student_routes.attendance') }}" class="btn btn-sm btn-outline">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Mask Status</th>
+                                    <th>Confidence</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in recent %}
+                                <tr>
+                                    <td><strong>{{ record.attendance_date.strftime('%d %b %Y') }}</strong></td>
+                                    <td style="color:var(--color-stone);">{{ record.attendance_date.strftime('%A') }}</td>
+                                    <td>{{ record.attendance_time.strftime('%I:%M %p') }}</td>
+                                    <td>
+                                        {% if record.mask_detected %}
+                                        <span class="badge badge-mint">Mask</span>
+                                        {% else %}
+                                        <span class="badge badge-muted">No Mask</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><small>{{ "%.0f"|format(record.recognition_confidence * 100) }}%</small></td>
+                                    <td><span class="badge badge-green">Present</span></td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="6" style="text-align:center;padding:40px;color:var(--color-stone);">
+                                        <i class="fa-solid fa-calendar-xmark" style="font-size:2rem;margin-bottom:8px;"></i>
+                                        <div>No attendance records yet</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_js %}
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+{% endblock %}

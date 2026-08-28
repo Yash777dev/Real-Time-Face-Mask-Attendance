@@ -1,0 +1,527 @@
+/* style.css — Minimalist Black & White Monochrome Glassmorphic Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+/* ========================================
+   Pure Black & White Monochrome Tokens
+   ======================================== */
+:root {
+    /* Backgrounds & Glass Surfaces */
+    --color-black: #000000;
+    --color-dark-surface: #09090B;
+    --color-glass-card: rgba(24, 24, 27, 0.7);
+    --color-glass-card-hover: rgba(39, 39, 42, 0.8);
+    --color-glass-header: rgba(18, 18, 20, 0.9);
+    --color-glass-input: rgba(24, 24, 27, 0.85);
+    
+    /* Borders & Outlines */
+    --border-color: rgba(255, 255, 255, 0.12);
+    --border-hover: rgba(255, 255, 255, 0.3);
+    --border-bright: rgba(255, 255, 255, 0.6);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    
+    /* Monochrome Accents (Pure White & Zinc Greys) */
+    --color-white: #FFFFFF;
+    --color-zinc-50: #FAFAFA;
+    --color-zinc-100: #F4F4F5;
+    --color-zinc-300: #D4D4D8;
+    --color-zinc-400: #A1A1AA;
+    --color-zinc-500: #71717A;
+    --color-zinc-700: #3F3F46;
+    --color-zinc-800: #27272A;
+    --color-zinc-900: #18181B;
+    
+    /* Semantic Aliases */
+    --bg-primary: var(--color-black);
+    --bg-secondary: var(--color-dark-surface);
+    --bg-card: var(--color-glass-card);
+    --bg-card-hover: var(--color-glass-card-hover);
+    --bg-input: var(--color-glass-input);
+    
+    --text-primary: var(--color-white);
+    --text-secondary: var(--color-zinc-300);
+    --text-muted: var(--color-zinc-400);
+    --text-accent: var(--color-white);
+    
+    --gradient-glow: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    --gradient-mono: linear-gradient(135deg, #FFFFFF 0%, #E4E4E7 100%);
+    
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 22px;
+    
+    --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.6);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.8);
+    --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.9);
+    --shadow-glow: 0 0 25px rgba(255, 255, 255, 0.12);
+    
+    --transition-fast: 150ms ease;
+    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================
+   Reset & Base Styles
+   ======================================== */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--color-white);
+    text-decoration: none;
+    transition: opacity var(--transition-fast);
+}
+
+a:hover {
+    opacity: 0.8;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: var(--color-black);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-white);
+}
+
+/* ========================================
+   BUTTONS (Pure Black & White Minimalist)
+   ======================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: var(--color-white);
+    color: var(--color-black);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover {
+    background: var(--color-zinc-100);
+    color: var(--color-black);
+    box-shadow: 0 6px 24px rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-white);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(12px);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--color-white);
+    transform: translateY(-2px);
+}
+
+.btn-outline {
+    background: rgba(18, 18, 20, 0.5);
+    color: var(--color-white);
+    border: 1px solid var(--border-hover);
+    backdrop-filter: blur(12px);
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: var(--color-white);
+    color: var(--color-white);
+    transform: translateY(-2px);
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 0.8125rem;
+}
+
+.btn-lg {
+    padding: 14px 32px;
+    font-size: 1rem;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+/* ========================================
+   GLASS CARDS & CONTAINERS
+   ======================================== */
+.card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.card:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-md);
+}
+
+.card-header {
+    padding: 20px 24px;
+    background: rgba(18, 18, 20, 0.85);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+}
+
+.card-body {
+    padding: 24px;
+}
+
+/* ========================================
+   BADGES (Black & White Monochromic)
+   ======================================== */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.badge-green, .badge-present, .badge-sky, .badge-white {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+}
+
+.badge-mint, .badge-mask {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-zinc-100);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(8px);
+}
+
+.badge-muted, .badge-absent, .badge-no-mask {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-zinc-400);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bg-primary {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: var(--color-white) !important;
+}
+
+.bg-success {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--color-zinc-100) !important;
+}
+
+/* ========================================
+   FORMS & INPUTS (Black & White)
+   ======================================== */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9375rem;
+    transition: all var(--transition-fast);
+    outline: none;
+    backdrop-filter: blur(12px);
+}
+
+.form-control:focus {
+    border-color: var(--color-white);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+}
+
+.form-select {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.9375rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    backdrop-filter: blur(12px);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23FFFFFF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 12px center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    padding-right: 40px;
+}
+
+.form-select option {
+    background: #18181B;
+    color: var(--text-primary);
+}
+
+/* ========================================
+   TABLES (Monochrome Glassmorphic)
+   ======================================== */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(18, 18, 20, 0.6);
+}
+
+.table tbody td {
+    padding: 14px 16px;
+    font-size: 0.875rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    vertical-align: middle;
+}
+
+.table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* ========================================
+   ALERTS / FLASH MESSAGES
+   ======================================== */
+.alert {
+    padding: 14px 20px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.875rem;
+    border: 1px solid var(--border-bright);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-white);
+    backdrop-filter: blur(16px);
+}
+
+.alert-dismiss {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+/* ========================================
+   LOGIN PAGE (Black & White Monochromic)
+   ======================================== */
+.login-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: var(--color-black);
+}
+
+.login-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+}
+
+.login-bg::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    top: -150px;
+    right: -150px;
+}
+
+.login-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 440px;
+    background: var(--color-glass-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius-xl);
+    padding: 48px 40px;
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.login-brand {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.login-brand .brand-icon {
+    width: 56px;
+    height: 56px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--color-white);
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--color-white);
+    margin-bottom: 16px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.login-brand h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-white);
+}
+
+.login-brand p {
+    color: var(--color-zinc-400);
+    font-size: 0.875rem;
+    margin-top: 4px;
+}
+
+.role-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: rgba(18, 18, 20, 0.8);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 4px;
+}
+
+.role-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--color-zinc-400);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.role-btn.active {
+    background: var(--color-white);
+    color: var(--color-black);
+    font-weight: 600;
+}
+
+/* Attendance List Helpers */
+.attendance-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background var(--transition-fast);
+}
+
+.attendance-item:last-child {
+    border-bottom: none;
+}
+
+.attendance-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.attendance-student-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.attendance-student-info .student-name {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--text-primary);
+}
+
+.attendance-student-info .student-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}

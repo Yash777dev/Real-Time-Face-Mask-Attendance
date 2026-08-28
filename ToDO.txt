@@ -1,0 +1,334 @@
+Viewed config.py:57-75
+Viewed README.md:1-30
+Viewed README.md:30-45
+
+Now I'll inject the **"🚀 TO DO FIRST"** section right after the Table of Contents and before the Overview, and also add it to the TOC:
+
+Ran command: `$content = Get-Content "README.md" -Raw -Encoding UTF8
+
+$todoSection = @'
+
+---
+
+## 🚀 TO DO FIRST — Complete Setup Checklist
+
+> **Read this entire section before running the project.**
+> Follow each step in order. Skipping any step will cause the app to fail to start.
+
+---
+
+### ✅ STEP 1 — Install Python 3.10+
+
+Download and install Python from [https://python.org/downloads](https://python.org/downloads).
+
+During installation on Windows, **check the box: "Add Python to PATH"**.
+
+Verify:
+```bash
+python --version
+# Expected: Python 3.10.x or higher
+```
+
+---
+
+### ✅ STEP 2 — Install PostgreSQL
+
+Download PostgreSQL from [https://www.postgresql.org/download](https://www.postgresql.org/download).
+
+During installation:
+- Set a **password** for the `postgres` user — **remember this, you will need it**
+- Keep the default port: **5432**
+- Install **pgAdmin 4** (bundled) — useful for verifying the DB
+
+Verify PostgreSQL is running:
+```bash
+psql -U postgres -c "\l"
+# Should list available databases
+```
+
+---
+
+### ✅ STEP 3 — Create the Database
+
+Open a terminal (or pgAdmin Query Tool) and run:
+
+```sql
+CREATE DATABASE face_attendance_db;
+```
+
+Verify it was created:
+```sql
+\l
+-- You should see 'face_attendance_db' in the list
+```
+
+---
+
+### ✅ STEP 4 — Clone the Repository
+
+```bash
+git clone <your-repository-url>
+cd Real-Time_Face_Attendance/face-mask-attendance
+```
+
+---
+
+### ✅ STEP 5 — Create a Python Virtual Environment
+
+```bash
+python -m venv venv
+```
+
+**Activate it:**
+
+Windows (Command Prompt):
+```cmd
+venv\Scripts\activate
+```
+
+Windows (PowerShell):
+```powershell
+venv\Scripts\Activate.ps1
+```
+
+Linux / macOS:
+```bash
+source venv/bin/activate
+```
+
+You should see `(venv)` appear in your terminal prompt.
+
+---
+
+### ✅ STEP 6 — Install All Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+> **Windows users:** If `insightface` fails to install, you need C++ Build Tools:
+> 1. Download [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+> 2. Install **"Desktop development with C++"** workload
+> 3. Re-run `pip install insightface`
+
+> **If `torch` installation is slow**, install it separately first:
+> ```bash
+> pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+> ```
+
+---
+
+### ✅ STEP 7 — Configure the `.env` File
+
+Open the `.env` file in the project root (`face-mask-attendance/.env`) and update **every value** that applies to your machine:
+
+```env
+# ============================================================
+# FLASK SETTINGS — Leave as-is for development
+# ============================================================
+FLASK_APP=app.py
+FLASK_ENV=development
+FLASK_DEBUG=1
+
+# ⚠️  IMPORTANT: Change this secret key to a long random string in production
+SECRET_KEY=face-mask-attendance-super-secret-key-change-in-production-2024
+
+# ============================================================
+# DATABASE — UPDATE THIS WITH YOUR OWN CREDENTIALS
+# ============================================================
+# Format: postgresql://<username>:<password>@<host>:<port>/<database_name>
+#
+# username  → your PostgreSQL username (default: postgres)
+# password  → the password you set during PostgreSQL installation (STEP 2)
+# host      → localhost (if PostgreSQL is on this machine)
+# port      → 5432 (PostgreSQL default)
+# database  → face_attendance_db (created in STEP 3)
+#
+DATABASE_URL=postgresql://postgres:YourPasswordHere@localhost:5432/face_attendance_db
+#                                  ^^^^^^^^^^^^^^^^^^
+#                                  Replace with your actual PostgreSQL password
+
+# ============================================================
+# ML MODELS — Change only if using different model files
+# ============================================================
+FACE_DETECTOR_MODEL=yolov8n-face.pt     # Auto-downloaded on first run
+MASK_DETECTOR_MODEL=mask_detector.pt    # YOU must provide this file (see STEP 8)
+ARCFACE_MODEL=buffalo_l                 # Auto-downloaded by InsightFace
+
+# ============================================================
+# FACE RECOGNITION TUNING — Safe to leave as defaults
+# ============================================================
+RECOGNITION_THRESHOLD=0.55   # Increase if getting false positives (try 0.60-0.65)
+MIN_FACE_SIZE=0.3            # Minimum face fraction of frame to detect
+FACE_CAPTURE_COUNT=5         # Number of photos captured per type (normal/masked)
+
+# ============================================================
+# FILE UPLOAD SETTINGS — Safe to leave as defaults
+# ============================================================
+UPLOAD_FOLDER=uploads
+MAX_CONTENT_LENGTH=16777216   # 16 MB max upload size
+
+# ============================================================
+# DEFAULT ADMIN ACCOUNT — Created automatically on first boot
+# ============================================================
+# ⚠️  CHANGE THESE before deploying to production!
+DEFAULT_ADMIN_USERNAME=admin
+DEFAULT_ADMIN_EMAIL=admin@faceattendance.com
+DEFAULT_ADMIN_PASSWORD=admin123           # ← CHANGE THIS
+DEFAULT_ADMIN_FULLNAME=System Administrator
+```
+
+**The only line you MUST change to get the app running is:**
+```env
+DATABASE_URL=postgresql://postgres:YOUR_ACTUAL_PASSWORD@localhost:5432/face_attendance_db
+```
+
+---
+
+### ✅ STEP 8 — Place ML Model Files
+
+The project uses 3 AI models. Here is what you need to do for each:
+
+| Model | File | Action Required |
+|-------|------|----------------|
+| **YOLOv8n Face Detector** | `yolov8n-face.pt` | ✅ **Auto-downloaded** on first run (via Ultralytics) |
+| **InsightFace ArcFace** | `buffalo_l` (folder) | ✅ **Auto-downloaded** on first run (via InsightFace) |
+| **Mask Detector** | `mask_detector.pt` | ⚠️ **You must provide this file manually** |
+
+**For the Mask Detector:**
+
+1. Obtain a custom-trained YOLOv8 mask detection model (`mask_detector.pt`)
+2. Place it in:
+   ```
+   face-mask-attendance/
+   └── backend/
+       └── ml_models/
+           └── mask_detector.pt   ← place here
+   ```
+
+> **If you don't have a mask detector model:**  
+> The app will still work — it will log a warning and default to recording `mask_detected = False` for all attendance entries. Face recognition will still function normally.
+
+---
+
+### ✅ STEP 9 — Verify Your Webcam
+
+The live attendance camera requires a working webcam (built-in or USB).
+
+- On **Windows**, open the Camera app and confirm video is showing
+- The system uses camera index `0` by default (first detected camera)
+- If you have multiple cameras, the active camera can be configured from the Admin camera page
+
+---
+
+### ✅ STEP 10 — Run the Application
+
+```bash
+# Make sure you are inside face-mask-attendance/ and venv is activated
+python app.py
+```
+
+Expected output:
+```
+[INFO] backend.app: Application initialized successfully
+ * Running on http://127.0.0.1:5000
+ * Running on http://0.0.0.0:5000
+```
+
+Open your browser and go to: **http://127.0.0.1:5000**
+
+---
+
+### ✅ STEP 11 — Login and Change Default Password
+
+1. Go to **http://127.0.0.1:5000**
+2. Click **Login**
+3. Enter:
+   - **Username:** `admin`
+   - **Password:** `admin123`
+4. ⚠️ **Immediately change the admin password** from the admin settings panel
+
+---
+
+### ✅ STEP 12 — Register Your First Student (End-to-End Test)
+
+1. Go to **Admin → Students → Add Student**
+2. Fill in the student details and submit
+3. Click the student → **Register Face**
+4. Allow webcam access in the browser popup
+5. Capture **5 Normal** face photos (without mask)
+6. Capture **5 Masked** face photos (with mask)
+7. Click **Generate Embeddings**
+8. Go to **Attendance → Camera** and test recognition live
+
+---
+
+### 🔴 Common Issues & Fixes
+
+| Problem | Cause | Fix |
+|---------|-------|-----|
+| `could not connect to server` | PostgreSQL not running or wrong password | Start PostgreSQL service; check DATABASE_URL password |
+| `ModuleNotFoundError: insightface` | insightface not installed | `pip install insightface` (needs C++ build tools on Windows) |
+| `No such file: mask_detector.pt` | Model file missing | Place the file in `backend/ml_models/` or ignore (app degrades gracefully) |
+| `Camera not accessible` | Webcam in use by another app | Close other camera apps (Zoom, Teams, etc.) |
+| `PermissionError on venv\Scripts\Activate.ps1` | PowerShell execution policy | Run: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` |
+| `Face not recognized` | Low recognition confidence | Lower `RECOGNITION_THRESHOLD` to `0.45` in `.env`; re-generate embeddings |
+| `Attendance not marking` | Student not registered with embeddings | Complete the face registration flow for the student |
+| `port 5000 already in use` | Another app using port 5000 | Kill the process or change port in `app.py` to e.g. `5001` |
+
+---
+
+### 📋 Quick Checklist
+
+Before running, confirm:
+
+- [ ] Python 3.10+ installed and on PATH
+- [ ] PostgreSQL installed and running on port 5432
+- [ ] Database `face_attendance_db` created
+- [ ] Virtual environment created and activated
+- [ ] `pip install -r requirements.txt` completed without errors
+- [ ] `.env` updated with correct PostgreSQL `DATABASE_URL` (your password)
+- [ ] `mask_detector.pt` placed in `backend/ml_models/` (optional but recommended)
+- [ ] Webcam connected and working
+- [ ] `python app.py` runs without errors
+- [ ] http://127.0.0.1:5000 opens in browser
+
+---
+
+'@
+
+# Insert TODO section after the TOC (after the last TOC item line "- [Known Limitations]...")
+$insertAfter = "- [Known Limitations](#known-limitations)"
+$content = $content -replace [regex]::Escape($insertAfter), ("$insertAfter" + $todoSection)
+
+# Also update the Table of Contents to include the new section
+$tocTarget = "- [Overview](#overview)"
+$newTocEntry = "- [🚀 TO DO FIRST — Complete Setup Checklist](#-to-do-first--complete-setup-checklist)`n- [Overview](#overview)"
+$content = $content -replace [regex]::Escape($tocTarget), $newTocEntry
+
+Set-Content -Path "README.md" -Value $content -Encoding UTF8
+Write-Host "README.md updated successfully"`
+Ran command: `(Get-Content "README.md" -Encoding UTF8 | Select-String "TO DO FIRST" | Select-Object -First 5).Line`
+
+The **"🚀 TO DO FIRST"** section has been successfully added to [README.md](file:///c:/Users/Lenovo/PROJECTS/Real-Time_Face_Attendance/face-mask-attendance/README.md). Here's what was added — 12 detailed steps:
+
+---
+
+### What's in the "TO DO FIRST" Section
+
+| Step | What It Covers |
+|------|---------------|
+| **Step 1** | Install Python 3.10+ — with PATH setup reminder |
+| **Step 2** | Install PostgreSQL — with password setup warning |
+| **Step 3** | Create the `face_attendance_db` database — SQL command included |
+| **Step 4** | Clone the repository |
+| **Step 5** | Create & activate virtual environment — Windows CMD, PowerShell, and Linux/macOS commands |
+| **Step 6** | `pip install -r requirements.txt` — with Windows C++ build tools fix for InsightFace |
+| **Step 7** | Configure `.env` — **line-by-line explanation** of every variable, especially the `DATABASE_URL` with username/password format explained |
+| **Step 8** | Place ML model files — table showing which auto-download vs which must be manually placed (`mask_detector.pt`) |
+| **Step 9** | Verify webcam is working |
+| **Step 10** | Run `python app.py` — expected output shown |
+| **Step 11** | Login with default credentials + reminder to change password |
+| **Step 12** | Register first student end-to-end test |
+| **🔴 Common Issues** | 8 common error → cause → fix table |
+| **📋 Checklist** | 10-item pre-flight checklist to tick off before running |

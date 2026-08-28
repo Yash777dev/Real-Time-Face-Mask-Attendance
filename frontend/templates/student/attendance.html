@@ -1,0 +1,89 @@
+<!-- frontend/templates/student/attendance.html -->
+
+{% extends "base.html" %}
+
+{% block title %}My Attendance — SmartAttend{% endblock %}
+
+{% block additional_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <nav class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon"><i class="fa-solid fa-expand"></i></span>
+            <h5>SmartAttend</h5>
+            <p>Student Portal</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="{{ url_for('student_routes.dashboard') }}"><i class="fa-solid fa-house"></i><span>Dashboard</span></a></li>
+            <li><a href="{{ url_for('student_routes.profile') }}"><i class="fa-solid fa-user"></i><span>My Profile</span></a></li>
+            <li><a href="{{ url_for('student_routes.attendance') }}" class="active"><i class="fa-solid fa-calendar-check"></i><span>My Attendance</span></a></li>
+            <li class="sidebar-divider"></li>
+            <li><a href="{{ url_for('auth_routes.logout') }}"><i class="fa-solid fa-right-from-bracket"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
+
+    <div class="main-content">
+        <div class="topbar">
+            <div class="topbar-left">
+                <span class="topbar-title"><i class="fa-solid fa-calendar-check me-2 text-primary"></i>My Attendance History</span>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <div class="card">
+                <div class="card-header">
+                    <span>Attendance Records</span>
+                    <span class="badge badge-green">{{ attendance|length }} Days Logged</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Date</th>
+                                    <th>Day</th>
+                                    <th>Time</th>
+                                    <th>Mask Status</th>
+                                    <th>Confidence</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td><strong>{{ record.attendance_date.strftime('%d %b %Y') }}</strong></td>
+                                    <td style="color:var(--color-stone);">{{ record.attendance_date.strftime('%A') }}</td>
+                                    <td>{{ record.attendance_time.strftime('%I:%M %p') }}</td>
+                                    <td>
+                                        {% if record.mask_detected %}
+                                        <span class="badge badge-mint">Mask</span>
+                                        {% else %}
+                                        <span class="badge badge-muted">No Mask</span>
+                                        {% endif %}
+                                    </td>
+                                    <td><small>{{ "%.0f"|format(record.recognition_confidence * 100) }}%</small></td>
+                                    <td><span class="badge badge-green">Present</span></td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" style="text-align:center;padding:40px;color:var(--color-stone);">
+                                        <i class="fa-solid fa-calendar-xmark" style="font-size:2rem;margin-bottom:8px;"></i>
+                                        <div>No attendance recorded yet</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
